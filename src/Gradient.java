@@ -1,19 +1,40 @@
 class Gradient {
-  public int[][] colors;
+  public Color[] colors;
   public double[] positions;
 
-  public Gradient(int[][] colors, double[] positions) {
+  public Gradient (int[][] colorCodes, double[] positions) {
+    Color[] colors = new Color[colorCodes.length];
+    for (int i = 0; i < colorCodes.length; i++) {
+      colors[i] = new Color(colorCodes[i]);
+    }
+    this.colors = colors;
+    this.positions = positions;
+  }
+  public Gradient(Color[] colors, double[] positions) {
     this.colors = colors;
     this.positions = positions;
   }
 
-  public int[] getColorAt(int u) {
-    int[] color = new int[3];
-    for (int i = 0; i < 3; i++) {
-      
+//  public int[] getColorAt(double u) {
+//    int[] color = new int[3];
+//    for (int i = 0; i < 3; i++) {
+//
+//    }
+//  }
+
+  public static int[] lerpColors(double t, Color firstColor, Color secondColor) {
+    if (t > 1 || t < 0) {
+      throw new IllegalArgumentException("'t' must be between 0 and 1 (inclusive)");
     }
+    if (firstColor.colorCode.length != secondColor.colorCode.length) {
+      throw new IllegalArgumentException("The colors must have the same amount of values");
+    }
+    int[] newColor = new int[firstColor.colorCode.length];
+    for (int i = 0; i < firstColor.colorCode.length; i++) {
+      newColor[i] = (int) (firstColor.colorCode[i] * (1-t) + secondColor.colorCode[i] * t);
+    }
+    return newColor;
   }
-  
   public static int hexDigitToInt(char hex) {
     if (hex >= 48 && hex <= 57)
       return hex - '0';
@@ -44,7 +65,7 @@ class Gradient {
     int n = (int) (Math.log(number) / Math.log(16));
     for (int x = 0; x <= n; x++) {
       int power = (int) Math.pow(16, n - x);
-      hex.append(intToHexDigit((int) (number / power)));
+      hex.append(intToHexDigit(number / power));
       number %= power;
     }
     return hex.toString();
@@ -63,7 +84,7 @@ class Gradient {
       StringBuilder partHex = new StringBuilder(intToHex(color));
       while (partHex.length() < 2)
         partHex.insert(0, "0");
-      hex.append(partHex.toString());
+      hex.append(partHex);
     }
     return hex.toString();
   }
